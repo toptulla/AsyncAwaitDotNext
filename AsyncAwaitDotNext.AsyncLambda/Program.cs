@@ -9,7 +9,7 @@ namespace AsyncAwaitDotNext.AsyncLambda
     {
         static void Main()
         {
-            WithTrueAsyncLambda().Wait();
+            TrueWrapAsyncVoid().Wait();
             Console.WriteLine("Done");
             Console.ReadLine();
         }
@@ -47,6 +47,11 @@ namespace AsyncAwaitDotNext.AsyncLambda
             await Task.Delay(1000);
         }
 
+        private static void Foo(Action p)
+        {
+            p();
+        }
+
         private async static Task WithTrueAsyncLambda()
         {
             Console.WriteLine("Started");
@@ -74,9 +79,34 @@ namespace AsyncAwaitDotNext.AsyncLambda
             Console.WriteLine($"WithTrueAsyncLambda 2 {Thread.CurrentThread.ManagedThreadId}");
         }
 
-        private static void Foo(Action p)
+        private static async Task TrueWrapAsyncVoid()
         {
-            p();
+            Console.WriteLine("Started");
+            Console.OutputEncoding = Encoding.UTF8;
+
+            try
+            {
+                Task t = null;
+                SomeMwthod(() => t = DelayAndTrowAsync());
+                await t;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"An exception occured: {e.Message}");
+            }
+
+            Console.WriteLine("Finished");
+        }
+
+        private static void SomeMwthod(Action action)
+        {
+            action();
+        }
+
+        private static async Task DelayAndTrowAsync()
+        {
+            await Task.Delay(100);
+            throw new InvalidOperationException();
         }
     }
 }
