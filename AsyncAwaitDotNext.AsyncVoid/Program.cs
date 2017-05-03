@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncAwaitDotNext.AsyncVoid
@@ -8,7 +9,23 @@ namespace AsyncAwaitDotNext.AsyncVoid
     {
         static void Main()
         {
-            MainAsync().Wait();
+            Console.WriteLine($"M {Thread.CurrentThread.ManagedThreadId}");
+            MyMethod().Wait();
+            Console.WriteLine($"M {Thread.CurrentThread.ManagedThreadId}");
+            Console.ReadLine();
+        }
+
+        private static async Task MyMethod()
+        {
+            Console.WriteLine($"0 {Thread.CurrentThread.ManagedThreadId}");
+            Task t1 = Task.Delay(1000);
+            Console.WriteLine($"1 {Thread.CurrentThread.ManagedThreadId}");
+            await t1;
+            Console.WriteLine($"2 {Thread.CurrentThread.ManagedThreadId}");
+            Task t2 = Task.Delay(1000);
+            Console.WriteLine($"3 {Thread.CurrentThread.ManagedThreadId}");
+            await t2;
+            Console.WriteLine($"4 {Thread.CurrentThread.ManagedThreadId}");
         }
         
         private async static Task MainAsync()
